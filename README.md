@@ -4,12 +4,12 @@ Project for seminar Mathematische Modellierung in Anwendungen at Bergische Unive
 
 ### First task
 
-*Write a scheme for the following PDE: 
+* Write a scheme for the following PDE: 
 ```math 
 2ikA_x + A_{yy} = 0,
 ```
 where $k = 0.2 m^{-1}, A_0 = e^{-k^2y^2}$
 
-*implement the code
+* Implement the code
 
 
