@@ -4,145 +4,116 @@ import numpy as np
 # math functions
 import math 
 
+
+#############
+import pandas as pd
+import seaborn as sns
+import matplotlib.pyplot as plt
+import matplotlib.cm as cmap
+
 # THIS IS FOR PLOTTING
+np.set_printoptions(threshold=np.inf)
+np.set_printoptions(linewidth=np.inf)
 
 import matplotlib.pyplot as plt # side-stepping mpl backend
 import warnings
 warnings.filterwarnings("ignore")
 
 
-
-N=100
-Nt=100 # y
-h=5
-k=5 # y
-s = 0.2 ########### moj k
-r = float(-1/2)/s ########## moj D
-
-time=np.arange(start= 0,stop = Nt + k, step = k)
-time_steps = int(math.floor(Nt + k - 0)/k)
-x=np.arange(start = -50, stop = 50+h, step = h)
-
-'''X, Y = np.meshgrid(x, time)
-print(time)
-print(x)
-fig = plt.figure(figsize=(8,6))
-plt.plot(X,Y,'ro');
-plt.show();'''
-
-########################3 s tukaj, je moj k
-
-# initial condition
-w=np.zeros((len(x),time_steps))
-b=np.zeros(N-1)
-# Initial Condition
-for i in range (1,len(x)):
-    w[i, 0] = 1
-
-# Boundary Condition
-for j in range (0,time_steps):
-    w[0,j]= math.exp(-s*float(j^2))
-
-'''print(w)
-print(len(x))
-print(len(w[:,0]))
-fig = plt.figure(figsize=(8,4))
-plt.plot(x,w[:,0],'o:',label='Initial Condition')
-#plt.plot(x[[0,N]],w[[0,N],0],'go',label='Boundary Condition t[0]=0')
-plt.title('Intitial and Boundary Condition',fontsize=24)
-plt.xlabel('x')
-plt.ylabel('w')
-plt.legend(loc='best')
-plt.show()'''
-
-############################### r tukej je moj D
-
-### moj initial value
+Nx=100
+Ny=100 # y
+hx=5 # step x
+hy=1 # step y
+k = 0.2 
 
 
-aa = np.ones((3,3))
-zz = np.ones((3,1)) ######## tp je pravo
-mm = np.ones((1,3))
-kk = np.ones(3)
+x_points=np.arange(start= 0,stop = Nx + hx, step = hx)
+y_points=np.arange(start = -50, stop = 50+hy, step = hy)
+y_steps = int(math.floor(100 + hy)/hy)
+x_steps = int(math.floor(Nx + hx)/hx)
 
 
-'''print(np.multiply(aa,zz))
-print(np.multiply(aa, mm))
-print(np.multiply(aa, kk))'''
-
-print(aa.dot(zz))
-#print(aa.dot(mm))
-print(aa.dot(kk))
-
-
-A=np.zeros((N,N))
-B=np.zeros((N,N))
-for i in range (0,N):
-    A[i,i]=2+2*r
-    B[i,i]=2-2*r
-
-for i in range (0,N-2):           
-    A[i+1,i]=-r
-    A[i,i+1]=-r
-    B[i+1,i]=r
-    B[i,i+1]=r
-    
-#print(len(A)) 
-inverse = np.linalg.inv(A)
-#print(inverse)
-#print(A)
-#print(B)
-'''print(A)
-print(w)
-'''
-'''Ainv=np.linalg.inv(A)   
-fig = plt.figure(figsize=(12,4));
-plt.subplot(121)
-plt.imshow(A,interpolation='none');
-plt.xticks(np.arange(N-1), np.arange(1,N-0.9,1));
-plt.yticks(np.arange(N-1), np.arange(1,N-0.9,1));
-clb=plt.colorbar();
-clb.set_label('Matrix elements values');
-plt.title('Matrix A r=%s'%(np.round(r,3)),fontsize=24)
-
-plt.subplot(122)
-plt.imshow(B,interpolation='none');
-plt.xticks(np.arange(N-1), np.arange(1,N-0.9,1));
-plt.yticks(np.arange(N-1), np.arange(1,N-0.9,1));
-clb=plt.colorbar();
-clb.set_label('Matrix elements values');
-plt.title(r'Matrix $B$ r=%s'%(np.round(r,3)),fontsize=24)
-fig.tight_layout()
-plt.show();'''
-
-'''for j in range (1,time_steps+1):
-    b[0]=r*w[0,j-1]+r*w[0,j]
-    b[N-2]=r*w[N,j-1]+r*w[N,j]
-    v=np.dot(B,w[1:(N),j-1])
-    w[1:(N),j]=np.dot(Ainv,v+b)'''
-
-'''fig = plt.figure(figsize=(10,6));
-plt.imshow(w.transpose(), aspect='auto')
-plt.xticks(np.arange(len(x)), x)
-plt.yticks(np.arange(len(time)), time)
-plt.xlabel('x')
-plt.ylabel('time')
-clb=plt.colorbar()
-clb.set_label('Temperature (w)')
-plt.suptitle('Numerical Solution of the  Heat Equation r=%s'%(np.round(r,3)),fontsize=24,y=1.08)
-fig.tight_layout()
-plt.show()'''
-
-initial = np.zeros((Nt, 1))
-for i in range(Nt):
-    initial[i,0] = math.exp(-s*s*float(i^2))
-
-b = np.ones(Nt)*2*(1+r)
-d = np.ones(Nt)*np.multiply(B, initial)
-a = np.ones(Nt-1)*(-r)
-c = np.ones(Nt-1)*(-r)
-# lets create a, b, c, d
-#print(d)
+def TDMASolve(a, b, c, d):
+    # https://en.wikibooks.org/wiki/Algorithm_Implementation/Linear_Algebra/Tridiagonal_matrix_algorithm
+    n = len(a)
+    ac, bc, cc, dc = map(np.array, (a, b, c, d))
+    xc = []
+    for j in range(1, n):
+        if(bc[j - 1] == 0):
+            ier = 1
+            return
+        ac[j] = ac[j]/bc[j-1]
+        bc[j] = bc[j] - ac[j]*cc[j-1]
+    if(b[n-1] == 0):
+        ier = 1
+        return
+    for j in range(1, n):
+        dc[j] = dc[j] - ac[j]*dc[j-1]
+    dc[n-1] = dc[n-1]/bc[n-1]
+    for j in range(n-2, -1, -1):
+        dc[j] = (dc[j] - cc[j]*dc[j+1])/bc[j]
+    return dc
 
 
+# prepare Q and P
+Q=np.zeros((y_steps,y_steps))
+P=np.zeros((y_steps,y_steps))
 
+for i in range (0,y_steps):
+    D = float(-1/(2*(i+1)))/k*hx/hy/hy
+    Q[i,i]=2+2*D
+    P[i,i]=2-2*D
+
+for i in range (0,y_steps-1):  
+    D = float(-1/(2*(i+1)))/k*hx/hy/hy    
+    Q[i+1,i]=-D
+    Q[i,i+1]=-D
+    P[i+1,i]=D
+    P[i,i+1]=D
+
+
+# initial condition a0
+a0 = np.ones((y_steps, 1))
+for i in range(0, y_steps):
+    y = y_points[i]
+    a0[i, 0] = math.exp(-k*k*float(y^2))
+
+
+A = P.dot(a0) # calculated a_n
+
+# a, b, c, d for TDMA
+D = np.zeros(y_steps)
+
+for i in range (0,y_steps):
+    D[i] = float(-1/(2*(i+1)*hy*hy))/k*hx  
+
+a = np.ones(y_steps-1)*(-D[1:])
+c = np.ones(y_steps-1)*(-D[:-1])
+b = np.ones(y_steps)*2*(1+D)
+
+
+R = P.dot(A)
+
+for x in range(1, x_steps+1):
+    d = P.dot(A[:,x-1])
+    new_a = TDMASolve(a, b, c, d)
+
+    s = new_a.reshape(y_steps, 1)
+    A = np.hstack((A, s))
+
+np.set_printoptions(precision=3)
+print(A)
+
+xvals = x_points
+yvals = y_points
+zvals = A
+
+heatmap, ax = plt.subplots()
+
+im = ax.imshow(zvals,cmap='inferno',extent=[xvals[0],xvals[x_steps-1],yvals[0],yvals[y_steps-1]],interpolation='nearest',origin='lower',aspect='auto')
+ax.set(xlabel='some x', ylabel='some y')
+
+cbar = heatmap.colorbar(im)
+cbar.ax.set_ylabel('stuff')
+plt.show()
+heatmap.savefig('heatmap.png')
