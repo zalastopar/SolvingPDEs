@@ -4,6 +4,7 @@ import numpy as np
 # math functions
 import math 
 
+from numba import jit 
 
 #############
 import pandas as pd
@@ -33,7 +34,7 @@ y_steps = int(math.floor(100 + hy)/hy)
 x_steps = int(math.floor(Nx + hx)/hx)
 
 
-def TDMASolve(a, b, c, d):
+'''def TDMASolve(a, b, c, d):
     # https://en.wikibooks.org/wiki/Algorithm_Implementation/Linear_Algebra/Tridiagonal_matrix_algorithm
     n = len(a)
     ac, bc, cc, dc = map(np.array, (a, b, c, d))
@@ -53,7 +54,7 @@ def TDMASolve(a, b, c, d):
     for j in range(n-2, -1, -1):
         dc[j] = (dc[j] - cc[j]*dc[j+1])/bc[j]
     return dc
-
+'''
 
 # prepare Q and P
 Q=np.zeros((y_steps,y_steps))
@@ -96,24 +97,24 @@ R = P.dot(A)
 
 for x in range(1, x_steps+1):
     d = P.dot(A[:,x-1])
-    new_a = TDMASolve(a, b, c, d)
+    x = np.linalg.solve(Q, d)
 
-    s = new_a.reshape(y_steps, 1)
+    s = x.reshape(y_steps, 1)
     A = np.hstack((A, s))
 
 np.set_printoptions(precision=3)
 print(A)
 
-xvals = x_points
+xvals = x_points[3:5]
 yvals = y_points
-zvals = A
+zvals = A[:, 3:5]
 
 heatmap, ax = plt.subplots()
 
-im = ax.imshow(zvals,cmap='inferno',extent=[xvals[0],xvals[x_steps-1],yvals[0],yvals[y_steps-1]],interpolation='nearest',origin='lower',aspect='auto')
+im = ax.imshow(zvals,cmap='inferno',extent=[xvals[0],xvals[len(xvals)-1],yvals[0],yvals[len(yvals)-1]],interpolation='nearest',origin='lower',aspect='auto')
 ax.set(xlabel='some x', ylabel='some y')
 
 cbar = heatmap.colorbar(im)
 cbar.ax.set_ylabel('stuff')
 plt.show()
-heatmap.savefig('heatmap.png')
+heatmap.savefig('heatmap3-5.png')
