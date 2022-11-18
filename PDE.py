@@ -59,16 +59,13 @@ for i in range (0,y_steps-1):
 a0 = np.zeros((y_steps, 1), dtype=np.complex_)
 for i in range(0, y_steps):
     y = y_points[i]
-    a0[y, 0] = math.exp(-k*k*(y*y))
+    a0[i, 0] = complex(math.exp(-k*k*(y*y)), 0)
 
 
 s = [row[0] for row in a0]
 
 
-a1 = []
-for i in range(0, y_steps):
-    y = y_points[i]
-    a1.append(math.exp(-k*k*(y*y)))
+
 
 
 
@@ -95,7 +92,7 @@ b = np.ones(y_steps, dtype=np.complex_)*2*(1+D)
 
 A = np.zeros((y_steps, 1), dtype=np.complex_) # calculated a_n
 for i in range(len(a0)):
-    A[i, 0] = a0[i]
+    A[i, 0] = complex(a0[i], 0)
 
 
 
@@ -112,26 +109,15 @@ np.set_printoptions(precision=3)
 
 #print(A[:, 0])
 
-x = a1
-y = y_points
-
-# plot
-fig, ax = plt.subplots()
-
-ax.plot(x, y, linewidth=2.0)
-plt.title("A0 drawn real data type vector")
-plt.show()
-fig.savefig('lineA0-.png')
-
 # make data
-x = A[:, 0]
+x = A[:, 0].real
 y = y_points
 
 # plot
 fig, ax = plt.subplots()
 
 ax.plot(x, y, linewidth=2.0)
-plt.title("A0 drawn with i type data (0*i)")
+plt.title("A0")
 plt.show()
 fig.savefig('lineA0.png')
 
@@ -164,7 +150,7 @@ y = y_points
 # plot
 fig, ax = plt.subplots()
 ax.plot(x, y, linewidth=2.0)
-plt.title("A1")
+plt.title("A3")
 plt.show()
 fig.savefig('lineA3.png')
 
