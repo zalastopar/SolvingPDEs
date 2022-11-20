@@ -66,20 +66,6 @@ s = [row[0] for row in a0]
 
 
 
-
-
-
-'''x = a1
-y = y_points
-
-# plot
-fig, ax = plt.subplots()
-
-ax.plot(x, y, linewidth=2.0)
-plt.show()'''
-
-
-
 # a, b, c, d for TDMA
 D = np.zeros(y_steps, dtype=np.complex_)
 
@@ -107,10 +93,9 @@ for x in range(1, x_steps+1):
 np.set_printoptions(precision=3)
 
 
-#print(A[:, 0])
 
-# make data
-x = A[:, 0].real
+'''# make data
+x = A[:, 0]
 y = y_points
 
 # plot
@@ -118,7 +103,6 @@ fig, ax = plt.subplots()
 
 ax.plot(x, y, linewidth=2.0)
 plt.title("A0")
-plt.show()
 fig.savefig('lineA0.png')
 
 # make data
@@ -129,7 +113,6 @@ y = y_points
 fig, ax = plt.subplots()
 ax.plot(x, y, linewidth=2.0)
 plt.title("A1")
-plt.show()
 fig.savefig('lineA1.png')
 
 # make data
@@ -140,7 +123,6 @@ y = y_points
 fig, ax = plt.subplots()
 ax.plot(x, y, linewidth=2.0)
 plt.title("A2")
-plt.show()
 fig.savefig('lineA2.png')
 
 # make data
@@ -151,22 +133,54 @@ y = y_points
 fig, ax = plt.subplots()
 ax.plot(x, y, linewidth=2.0)
 plt.title("A3")
-plt.show()
 fig.savefig('lineA3.png')
 
 # make data
 x = A[:, 2]
 y = y_points
 
-'''# plot
+# plot
 fig, ax = plt.subplots()
 
 ax.plot(x, y, linewidth=2.0)
-plt.show()
+'''
 
-xvals = x_points[0:3]
+xvals = x_points
 yvals = y_points
-zvals = A[:, 0:3]
+zvals = A.real
+
+heatmap, ax = plt.subplots()
+
+im = ax.imshow(zvals,cmap='inferno',extent=[xvals[0],xvals[len(xvals)-1],yvals[0],yvals[len(yvals)-1]],interpolation='nearest',origin='lower',aspect='auto')
+
+ax.set(xlabel='some x', ylabel='some y')
+cbar = heatmap.colorbar(im)
+plt.title("Heatmap A.real")
+plt.show()
+heatmap.savefig('heatmap.png')
+
+
+def convert_to_decibel(x):
+    a0 = x[0]
+    new = []
+    for i in x:
+        new = new +  [20*cmath.log10(i/a0)]
+    return new
+
+
+B = np.zeros((y_steps, x_steps+1), dtype=np.complex_)
+
+for i in range(0, y_steps):
+
+    B[i,:] = convert_to_decibel(A[i, :])
+
+
+    
+
+
+xvals = x_points
+yvals = y_points
+zvals = B.real
 
 heatmap, ax = plt.subplots()
 
@@ -174,24 +188,9 @@ im = ax.imshow(zvals,cmap='inferno',extent=[xvals[0],xvals[len(xvals)-1],yvals[0
 ax.set(xlabel='some x', ylabel='some y')
 
 cbar = heatmap.colorbar(im)
-cbar.ax.set_ylabel('stuff')
+cbar.ax.set_ylabel('')
+plt.title("Heatmap 20*log10(A0/A).real")
 plt.show()
-heatmap.savefig('heatmap3p.png')'''
+heatmap.savefig('decibels.png')
 
-def huevalueplot(cmplxarray):
-    # Creating the black cover layer
-
-    black = np.full((*cmplxarray.shape, 4), 0.)
-    black[:,:,-1] = np.abs(cmplxarray) / np.abs(cmplxarray).max()
-    black[:,:,-1] = 1 - black[:,:,-1]
-
-    # Actual plot
-
-    fig, ax = plt.subplots()
-    # Plotting phases using 'hsv' colormap (the 'hue' part)
-    ax.imshow(np.angle(cmplxarray), cmap='hsv')
-    # Plotting the modulus array as the 'value' part
-    ax.imshow(black)
-    ax.set_axis_off()
-    plt.show()
 
