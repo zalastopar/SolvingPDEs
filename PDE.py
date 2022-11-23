@@ -34,7 +34,7 @@ k = 0.2
 
 x_points=np.arange(start= 0,stop = Nx + hx, step = hx)
 y_points=np.arange(start = -50, stop = 50+hy, step = hy)
-y_steps = int(math.floor(100 + hy)/hy)
+y_steps = int(math.floor(Ny + hy)/hy)
 x_steps = int(math.floor(Nx + hx)/hx)
 
 
@@ -164,7 +164,10 @@ def convert_to_decibel(x):
     a0 = x[0]
     new = []
     for i in x:
-        new = new +  [20*cmath.log10(i/a0)]
+        if cmath.log10(i/a0) == 0:
+            new = new + [1]
+        else:
+            new = new +  [20*cmath.log10(i/a0)]
     return new
 
 
@@ -178,7 +181,7 @@ for i in range(0, y_steps):
     
 
 
-xvals = x_points
+'''xvals = x_points
 yvals = y_points
 zvals = B.real
 
@@ -192,5 +195,157 @@ cbar.ax.set_ylabel('')
 plt.title("Heatmap 20*log10(A0/A).real")
 plt.show()
 heatmap.savefig('decibels.png')
+'''
+
+# true solution
+
+omega = 1/k
+
+Atilda = np.zeros((y_steps, x_steps), dtype=np.complex_)
+
+for i in range(x_steps):
+    for j in range(y_steps):
+        x_i = float(x_points[i])
+        y_j = float(y_points[j])
+        Atilda[j, i] = cmath.exp(-y_j*y_j/(omega*omega*(1. + (2.*1j* x_i)/(k*omega*omega)))) * 1/cmath.sqrt(1.+(2.*1j*x_i)/(k*float(omega)*float(omega)))
+
+        
+        
+
+'''xvals = x_points
+yvals = y_points
+zvals = Atilda.real
+
+heatmap, ax = plt.subplots()
+
+im = ax.imshow(zvals,cmap='inferno',extent=[xvals[0],xvals[len(xvals)-1],yvals[0],yvals[len(yvals)-1]],interpolation='nearest',origin='lower',aspect='auto')
+
+ax.set(xlabel='some x', ylabel='some y')
+cbar = heatmap.colorbar(im)
+plt.title("Heatmap Atilda.real")
+plt.show()
+heatmap.savefig('heatmap_tilda.png')'''
 
 
+# compare results
+
+# make data
+x1 = A[:, 0]
+x2 = Atilda[:, 0]
+y = y_points
+
+# plot
+fig, ax = plt.subplots()
+
+ax.plot(x1, y)
+ax.plot(x2, y, linestyle = 'dashed')
+plt.title("A0")
+plt.show()
+fig.savefig('lineA0a-compare.png')
+
+
+
+
+# make data
+x1 = A[:, 1]
+x2 = Atilda[:, 1]
+y = y_points
+
+# plot
+fig, ax = plt.subplots()
+
+ax.plot(x1, y)
+ax.plot(x2, y, linestyle = 'dashed')
+plt.title("A1")
+plt.show()
+fig.savefig('lineA1-compare.png')
+
+
+
+# make data
+x1 = A[:, 5]
+x2 = Atilda[:, 5]
+y = y_points
+
+# plot
+fig, ax = plt.subplots()
+
+ax.plot(x1, y)
+ax.plot(x2, y, linestyle = 'dashed')
+plt.title("A5")
+plt.show()
+fig.savefig('lineA5-compare.png')
+
+
+
+
+# make data
+x1 = A[:, 6]
+x2 = Atilda[:, 6]
+y = y_points
+
+# plot
+fig, ax = plt.subplots()
+
+ax.plot(x1, y)
+ax.plot(x2, y, linestyle = 'dashed')
+plt.title("A6")
+plt.show()
+fig.savefig('lineA6-compare.png')
+
+
+
+# make data
+x1 = A[:, 8]
+x2 = Atilda[:, 8]
+y = y_points
+
+# plot
+fig, ax = plt.subplots()
+
+ax.plot(x1, y)
+ax.plot(x2, y, linestyle = 'dashed')
+plt.title("A8")
+plt.show()
+fig.savefig('lineA8-compare.png')
+
+
+# make data
+x1 = A[:, 20]
+x2 = Atilda[:, 20]
+y = y_points
+
+# plot
+fig, ax = plt.subplots()
+
+ax.plot(x1, y)
+ax.plot(x2, y, linestyle = 'dashed')
+plt.title("A20")
+plt.show()
+fig.savefig('lineA20-compare.png')
+
+
+
+# decibels
+
+Btilda =  np.zeros((y_steps, x_steps), dtype=np.complex_)
+
+for i in range(0, y_steps):
+
+    Btilda[i,:] = convert_to_decibel(Atilda[i, :])
+    
+
+
+# make data
+x1 = Btilda[:, 10]
+x2 = Btilda[:, 10]
+y = y_points
+
+# plot
+fig, ax = plt.subplots()
+
+ax.plot(x1, y)
+ax.plot(x2, y, linestyle = 'dashed')
+plt.title("A1")
+plt.show()
+fig.savefig('lineA1-compare-decibels.png')
