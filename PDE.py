@@ -25,15 +25,15 @@ import warnings
 warnings.filterwarnings("ignore")
 
 
-Nx=100
-Ny=100 # y
+Nx=1000
+Ny=1000 # y
 hx=5 # step x
 hy=1 # step y
 k = 0.2 
 
 
 x_points=np.arange(start= 0,stop = Nx + hx, step = hx)
-y_points=np.arange(start = -50, stop = 50+hy, step = hy)
+y_points=np.arange(start = -500, stop = 500+hy, step = hy)
 y_steps = int(math.floor(Ny + hy)/hy)
 x_steps = int(math.floor(Nx + hx)/hx)
 
@@ -94,7 +94,7 @@ np.set_printoptions(precision=3)
 
 
 
-'''# make data
+# make data
 x = A[:, 0]
 y = y_points
 
@@ -103,7 +103,7 @@ fig, ax = plt.subplots()
 
 ax.plot(x, y, linewidth=2.0)
 plt.title("A0")
-fig.savefig('lineA0.png')
+fig.savefig('plots/lineA0-bigger.png')
 
 # make data
 x = A[:, 1]
@@ -113,7 +113,7 @@ y = y_points
 fig, ax = plt.subplots()
 ax.plot(x, y, linewidth=2.0)
 plt.title("A1")
-fig.savefig('lineA1.png')
+fig.savefig('plots/lineA1-bigger.png')
 
 # make data
 x = A[:, 2]
@@ -123,7 +123,7 @@ y = y_points
 fig, ax = plt.subplots()
 ax.plot(x, y, linewidth=2.0)
 plt.title("A2")
-fig.savefig('lineA2.png')
+fig.savefig('plots/lineA2-bigger.png')
 
 # make data
 x = A[:, 3]
@@ -133,17 +133,71 @@ y = y_points
 fig, ax = plt.subplots()
 ax.plot(x, y, linewidth=2.0)
 plt.title("A3")
-fig.savefig('lineA3.png')
+fig.savefig('plots/lineA3-bigger.png')
 
-# make data
-x = A[:, 2]
-y = y_points
 
-# plot
-fig, ax = plt.subplots()
+################################################################################################################################################################
 
-ax.plot(x, y, linewidth=2.0)
-'''
+xvals = x_points[0:3]
+yvals = y_points
+zvals = A.real[:, 0:3]
+
+heatmap, ax = plt.subplots()
+
+im = ax.imshow(zvals,cmap='inferno',extent=[xvals[0],xvals[len(xvals)-1],yvals[0],yvals[len(yvals)-1]],interpolation='nearest',origin='lower',aspect='auto')
+
+ax.set(xlabel='some x', ylabel='some y')
+cbar = heatmap.colorbar(im)
+plt.title("Heatmap A.real 0-3")
+
+heatmap.savefig('plots/heatmap0-3-bigger.png')
+
+#############################################################
+xvals = x_points[0:5]
+yvals = y_points
+zvals = A.real[:, 0:5]
+
+heatmap, ax = plt.subplots()
+
+im = ax.imshow(zvals,cmap='inferno',extent=[xvals[0],xvals[len(xvals)-1],yvals[0],yvals[len(yvals)-1]],interpolation='nearest',origin='lower',aspect='auto')
+
+ax.set(xlabel='some x', ylabel='some y')
+cbar = heatmap.colorbar(im)
+plt.title("Heatmap A.real 0-5")
+
+heatmap.savefig('plots/heatmap0-5-bigger.png')
+
+#############################################################
+xvals = x_points[0:10]
+yvals = y_points
+zvals = A.real[:, 0:10]
+
+heatmap, ax = plt.subplots()
+
+im = ax.imshow(zvals,cmap='inferno',extent=[xvals[0],xvals[len(xvals)-1],yvals[0],yvals[len(yvals)-1]],interpolation='nearest',origin='lower',aspect='auto')
+
+ax.set(xlabel='some x', ylabel='some y')
+cbar = heatmap.colorbar(im)
+plt.title("Heatmap A.real 0-10")
+
+heatmap.savefig('plots/heatmap0-10-bigger.png')
+
+###############################################################
+xvals = x_points[0:3]
+yvals = y_points
+zvals = A.real[:, 0:3]
+
+heatmap, ax = plt.subplots()
+
+im = ax.imshow(zvals,cmap='inferno',extent=[xvals[0],xvals[len(xvals)-1],yvals[0],yvals[len(yvals)-1]],interpolation='nearest',origin='lower',aspect='auto')
+
+ax.set(xlabel='some x', ylabel='some y')
+cbar = heatmap.colorbar(im)
+plt.title("Heatmap A.real 0-20")
+
+heatmap.savefig('plots/heatmap0-20-bigger.png')
+
+############################################################
 
 xvals = x_points
 yvals = y_points
@@ -156,11 +210,11 @@ im = ax.imshow(zvals,cmap='inferno',extent=[xvals[0],xvals[len(xvals)-1],yvals[0
 ax.set(xlabel='some x', ylabel='some y')
 cbar = heatmap.colorbar(im)
 plt.title("Heatmap A.real")
-plt.show()
-heatmap.savefig('heatmap.png')
+heatmap.savefig('plots/heatmap-bigger.png')
 
 
 def convert_to_decibel(x):
+    ''' Function takes a vector (matrix row) and transfores the quantity to decibels '''
     a0 = x[0]
     new = []
     for i in x:
@@ -181,7 +235,7 @@ for i in range(0, y_steps):
     
 
 
-'''xvals = x_points
+xvals = x_points
 yvals = y_points
 zvals = B.real
 
@@ -194,8 +248,8 @@ cbar = heatmap.colorbar(im)
 cbar.ax.set_ylabel('')
 plt.title("Heatmap 20*log10(A0/A).real")
 plt.show()
-heatmap.savefig('decibels.png')
-'''
+heatmap.savefig('plots/decibels-bigger.png')
+
 
 # true solution
 
@@ -212,7 +266,7 @@ for i in range(x_steps):
         
         
 
-'''xvals = x_points
+xvals = x_points
 yvals = y_points
 zvals = Atilda.real
 
@@ -222,9 +276,9 @@ im = ax.imshow(zvals,cmap='inferno',extent=[xvals[0],xvals[len(xvals)-1],yvals[0
 
 ax.set(xlabel='some x', ylabel='some y')
 cbar = heatmap.colorbar(im)
-plt.title("Heatmap Atilda.real")
+plt.title("Heatmap Atilda.real - analytical")
 plt.show()
-heatmap.savefig('heatmap_tilda.png')'''
+heatmap.savefig('plots/heatmap_tilda-bigger.png')
 
 
 # compare results
@@ -240,8 +294,9 @@ fig, ax = plt.subplots()
 ax.plot(x1, y)
 ax.plot(x2, y, linestyle = 'dashed')
 plt.title("A0")
+plt.legend(('numerical', 'analytical'))
 plt.show()
-fig.savefig('lineA0a-compare.png')
+fig.savefig('plots/lineA0a-compare-bigger.png')
 
 
 
@@ -257,8 +312,9 @@ fig, ax = plt.subplots()
 ax.plot(x1, y)
 ax.plot(x2, y, linestyle = 'dashed')
 plt.title("A1")
+plt.legend(('numerical', 'analytical'))
 plt.show()
-fig.savefig('lineA1-compare.png')
+fig.savefig('plots/lineA1-compare-bigger.png')
 
 
 
@@ -273,8 +329,9 @@ fig, ax = plt.subplots()
 ax.plot(x1, y)
 ax.plot(x2, y, linestyle = 'dashed')
 plt.title("A5")
+plt.legend(('numerical', 'analytical'))
 plt.show()
-fig.savefig('lineA5-compare.png')
+fig.savefig('plots/lineA5-compare-bigger.png')
 
 
 
@@ -290,8 +347,9 @@ fig, ax = plt.subplots()
 ax.plot(x1, y)
 ax.plot(x2, y, linestyle = 'dashed')
 plt.title("A6")
+plt.legend(('numerical', 'analytical'))
 plt.show()
-fig.savefig('lineA6-compare.png')
+fig.savefig('plots/lineA6-compare-bigger.png')
 
 
 
@@ -306,8 +364,9 @@ fig, ax = plt.subplots()
 ax.plot(x1, y)
 ax.plot(x2, y, linestyle = 'dashed')
 plt.title("A8")
+plt.legend(('numerical', 'analytical'))
 plt.show()
-fig.savefig('lineA8-compare.png')
+fig.savefig('plots/lineA8-compare-bigger.png')
 
 
 # make data
@@ -321,12 +380,14 @@ fig, ax = plt.subplots()
 ax.plot(x1, y)
 ax.plot(x2, y, linestyle = 'dashed')
 plt.title("A20")
+plt.legend(('numerical', 'analytical'))
 plt.show()
-fig.savefig('lineA20-compare.png')
+fig.savefig('plots/lineA20-compare-bigger.png')
 
 
-
+###########################################################################################################
 # decibels
+###########################################################################################################
 
 Btilda =  np.zeros((y_steps, x_steps), dtype=np.complex_)
 
@@ -335,17 +396,76 @@ for i in range(0, y_steps):
     Btilda[i,:] = convert_to_decibel(Atilda[i, :])
     
 
+    
+
 
 # make data
-x1 = Btilda[:, 10]
+x1 = B[:, 1]
+x2 = Btilda[:, 1]
+y = y_points
+
+# plot
+fig, ax = plt.subplots()
+
+ax.plot(y, x1)
+ax.plot(y, x2, linestyle = 'dashed')
+plt.title("A1-compare-decibels")
+plt.xlabel('y')
+plt.ylabel('decibels')
+plt.legend(('numerical', 'analytical'))
+plt.show()
+fig.savefig('plots/A1-compare-decibels-bigger.png')
+
+# make data
+x1 = B[:, 2]
+x2 = Btilda[:, 2]
+y = y_points
+
+# plot
+fig, ax = plt.subplots()
+
+ax.plot(y, x1)
+ax.plot(y, x2, linestyle = 'dashed')
+plt.title("A2-compare-decibels")
+plt.xlabel('y')
+plt.ylabel('decibels')
+plt.legend(('numerical', 'analytical'))
+plt.show()
+fig.savefig('plots/A2-compare-decibels-bigger.png')
+
+
+
+
+# make data
+x1 = B[:, 10]
 x2 = Btilda[:, 10]
 y = y_points
 
 # plot
 fig, ax = plt.subplots()
 
-ax.plot(x1, y)
-ax.plot(x2, y, linestyle = 'dashed')
-plt.title("A1")
+ax.plot(y, x1)
+ax.plot(y, x2, linestyle = 'dashed')
+plt.title("A10-compare-decibels")
+plt.xlabel('y')
+plt.ylabel('decibels')
+plt.legend(('numerical', 'analytical'))
 plt.show()
-fig.savefig('lineA1-compare-decibels.png')
+fig.savefig('plots/A10-compare-decibels-bigger.png')
+
+# make data
+x1 = B[:, 20]
+x2 = Btilda[:, 20]
+y = y_points
+
+# plot
+fig, ax = plt.subplots()
+
+ax.plot(y, x1)
+ax.plot(y, x2, linestyle = 'dashed')
+plt.title("A20-compare-decibels")
+plt.xlabel('y')
+plt.ylabel('decibels')
+plt.legend(('plots/numerical', 'analytical'))
+plt.show()
+fig.savefig('plots/A20-compare-decibels-bigger.png')
