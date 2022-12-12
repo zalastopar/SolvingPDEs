@@ -1,7 +1,7 @@
 # LIBRARY
 import math
 import numpy as np
-
+import pickle
 
 
 
@@ -9,8 +9,19 @@ import numpy as np
 PREPARE DATA
 -------------------------------------------------------------------------------------------------------------------------------------------------------------------'''
 
-def save_vector_to_csv(x):
-    pass
+def save_data(x, name):
+    ''' Takes n array and saves it as 'name' in file 'data' as .pkl file'''
+
+    with open('data/' + name + ".pkl","wb") as f:
+        pickle.dump(x,f)
+
+def load_data(name):
+    ''' Takes data 'name' in file 'data' and returns n array that is saved in the data'''
+
+    with open('data/' + name + ".pkl","rb") as f:
+        x = pickle.load(f)
+
+    return x
 
 
 def calculate_h(x, y):
@@ -25,33 +36,38 @@ def calculate_h(x, y):
     return h
 
 
-def calculate_z(x,y, h):
-    return h(x, y)
+def calculate_Kj(omega, c, x, y, j):
+    ''' 
+    x, y vectors, j float, omega float, c float
+    returns matrix Kj
+    '''
 
-def calculate_K(f, c, h):
-    
-    omega = 2*math.pi*f
-    len_h = len(h)
+    # create empty matrix Kj
+    K = np.zeros(len(y), len(x))
 
-    # find maximum j
-    min_h = min(h) # to get smallest bigest j
-    M = math.floor(omega*h/(c*math.pi))
+    for i in range(len(y)):
+        for m in range(len(x)):
+            h = calculate_h(x[m], y[i])
+            K[i, m] = math.sqrt(omega**2/c**2 - (math.pi*j/h)**2)
 
-    # create empty matrix K
-    K = np.zeros(len_h, 1)
-
-    for j in range(M):
-        Kj = np.zeros(len_h, 1)
-        for i in len_h:
-            Kj[i, 1] = math.sqrt(omega**2/c**2 - math.pi**2 * j**2 / h[i])
-
-        K[:, j] = Kj
-
-def calculate_phi(h, z):
-    pass
+    return K
 
 
 
+def calculate_phi_j(h, z, x, y):
+    '''
+    function h, float z
+    x, y, vectors
+    returns matrix phi_j for one z
+    '''
 
+    # create empty matrix Kj
+    P = np.zeros(len(y), len(x))
 
+    for i in range(len(y)):
+        for m in range(len(x)):
+            h = calculate_h(x[m], y[i])
+            P[i, m] = math.sqrt(2/h)* math.sin(math.pi*j*z/h)
+
+    return P
 

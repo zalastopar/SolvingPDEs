@@ -29,6 +29,7 @@ Ny = 1000 # y
 hx = 5 # step x
 hy = 1 # step y
 k = 0.2 
+bigger = True
 
 x_points = np.arange(start= 0,stop = Nx + hx, step = hx)
 y_points = np.arange(start = -500, stop = 500+hy, step = hy)
@@ -160,6 +161,8 @@ PLOTS
 def plt_fixed_x(A, col, name = '', limits = 0):
     ''' Function plots one column of matrix A and 
     saves it as ('line-Ax' + name) in folder 'Plots' '''
+    if bigger == True:
+        name = name + '_bigger'
 
     # choose the right row
     x = A[:, col]
@@ -179,11 +182,11 @@ def plt_fixed_x(A, col, name = '', limits = 0):
 #---------------------------------------------------
 # Plot all the columns in x_choices from A.real and abs(A)
 
-'''x_choices = [0, 1, 2, 3]
+x_choices = [0, 1, 2, 3]
 
 for el in x_choices:
-    plt_fixed_x(A.real, el, '_real', (-80, 80))                            # A.real
-    plt_fixed_x(absolute_value_matrix(A), el, '_absolute', (-80, 80))      # abs(A)'''
+    #plt_fixed_x(A.real, el, '_real', (-80, 80))                            # A.real
+    plt_fixed_x(absolute_value_matrix(A), el, '_absolute', (-80, 80))      # abs(A)
 
 # ANALYTICAL ----------------------------------------
 #---------------------------------------------------
@@ -200,6 +203,9 @@ x_interval_choices = [[0, 3], [0, 5], [0, 10], [0, 20]]
 def plt_heatmap_interval(A, b, e, name= ''):
     ''' Function plots a heatmap of matrix A from columns b to e and 
     saves it as ('Heatmap-Ab-e + name) in folder 'Plots' '''
+
+    if bigger == True:
+        name = name + '_bigger'
 
     # choose the right rows
     xvals = x_points[b:e]
@@ -218,6 +224,9 @@ def plt_heatmap(A, name = ''):
     ''' Function plots a heatmap of matrix A and 
     saves it as ('Heatmap-A + name) in folder 'Plots' '''
 
+    if bigger == True:
+        name = name + '_bigger'
+
     # choose the right rows
     xvals = x_points
     yvals = y_points
@@ -231,11 +240,11 @@ def plt_heatmap(A, name = ''):
     plt.title('Heatmap-A' + name)
     heatmap.savefig('plots/heatmap-A' + name + '.png')
 
-'''
+
 #---------------------------------------------------
 # Plot all the intervals in x_interval_choices from A.real and abs(A)
 for el in x_interval_choices:
-    plt_heatmap_interval(A.real, el[0], el[1], '_real')                         # real
+    #plt_heatmap_interval(A.real, el[0], el[1], '_real')                         # real
     plt_heatmap_interval(absolute_value_matrix(A), el[0], el[1], '_absolute')   # absolute
 
 
@@ -243,7 +252,7 @@ for el in x_interval_choices:
 #---------------------------------------------------
 # Plot heatmap of matrix A.real and abs(A) and decibels(A)
 
-plt_heatmap(A.real, '_real_num')                                   # real
+#plt_heatmap(A.real, '_real_num')                                   # real
 plt_heatmap(absolute_value_matrix(A), '_absolute_num')      # absolute
 plt_heatmap(convert_to_decibel(A), '_decibels_num')         # decibels
 
@@ -252,9 +261,9 @@ plt_heatmap(convert_to_decibel(A), '_decibels_num')         # decibels
 #---------------------------------------------------
 # Plot heatmap of matrix A.real and abs(A) and decibels(A)
 
-plt_heatmap(absolute_value_matrix(A_ana), '_absolute__ana')  # absolute
+plt_heatmap(absolute_value_matrix(A_ana), '_absolute_ana')  # absolute
 plt_heatmap(convert_to_decibel(A_ana), '_decibels_ana')      # decibels
-'''
+
   
 #----------------------------------------------------------------------------------------------------------------------
 # Compare results
@@ -263,6 +272,9 @@ plt_heatmap(convert_to_decibel(A_ana), '_decibels_ana')      # decibels
 def plt_compare_fixed_x(A, B, col, name = '', limits = 0):
     ''' Function plots one column of matrix A (numerical) and the same one from matrix B (analitical) and
     saves it as ('line-Ax' + name) in folder 'Plots' '''
+
+    if bigger == True:
+        name = name + '_bigger'
 
     # choose the right row
     xA = A[:, col]
@@ -282,17 +294,17 @@ def plt_compare_fixed_x(A, B, col, name = '', limits = 0):
     plt.legend(('numerical', 'analytical'))
     fig.savefig('plots/line-compare-A' + str(col) + name + '.png')
 
-'''
+
 #---------------------------------------------------
 # PCompare all the columns in x_choices
 
 x_choices_compare = [0, 1, 5, 6, 8, 20]
 
 for el in x_choices_compare:
-    plt_compare_fixed_x(A.real, A_ana.real, el, '_real')                                             # real
-    plt_compare_fixed_x(absolute_value_matrix(A), absolute_value_matrix(A_ana), el, '_absolute')     # absolute
-    plt_compare_fixed_x(convert_to_decibel(A), convert_to_decibel(A_ana), el, '_real')               # decibels
-'''
+    #plt_compare_fixed_x(A.real, A_ana.real, el, '_real')                                             # real
+    plt_compare_fixed_x(absolute_value_matrix(A), absolute_value_matrix(A_ana), el, '_absolute', limits = (-80, 80))     # absolute
+    plt_compare_fixed_x(convert_to_decibel(A), convert_to_decibel(A_ana), el, '_decibels', limits = (-80, 80))               # decibels
+
 
 
 
