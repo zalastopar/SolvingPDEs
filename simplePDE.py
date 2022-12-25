@@ -24,15 +24,15 @@ CALCULATIONS FOR NUMERICAL SOLUTION
 # Define area
 #----------------------------------------------------------------------------------------------------------------------
 
-Nx = 1000
-Ny = 1000 # y
+Nx = 100
+Ny = 100 # y
 hx = 5 # step x
 hy = 1 # step y
 k = 0.2 
-bigger = True
+bigger = False
 
 x_points = np.arange(start= 0,stop = Nx + hx, step = hx)
-y_points = np.arange(start = -500, stop = 500+hy, step = hy)
+y_points = np.arange(start = -50, stop = 50+hy, step = hy)
 y_steps = int(math.floor(Ny + hy)/hy) # number of y steps
 x_steps = int(math.floor(Nx + hx)/hx) # number of x steps
 
@@ -119,7 +119,6 @@ def convert_to_decibel_element(x):
     return 20*np.log10(absolute_value_element(x))
 
 
-
 def convert_to_decibel(X):
     ''' Applies function 'convert_to_decibel_element' to all elements of a matrix X'''
 
@@ -177,6 +176,7 @@ def plt_fixed_x(A, col, name = '', limits = 0):
     if limits != 0:
         plt.ylim(limits)
     fig.savefig('plots/line-A' + str(col) + name + '.png')
+    plt.close('all')
 
 # NUMERICAL ----------------------------------------
 #---------------------------------------------------
@@ -198,7 +198,7 @@ for el in x_choices:
 # Heatmap 
 #----------------------------------------------------------------------------------------------------------------------
 
-x_interval_choices = [[0, 3], [0, 5], [0, 10], [0, 20]]
+
 
 def plt_heatmap_interval(A, b, e, name= ''):
     ''' Function plots a heatmap of matrix A from columns b to e and 
@@ -219,6 +219,8 @@ def plt_heatmap_interval(A, b, e, name= ''):
     cbar = heatmap.colorbar(im)
     plt.title('Heatmap' + ' A[' + str(b)  + ', ' + str(e) + '] ' + name)
     heatmap.savefig('plots/heatmap-A' + str(b) + '-' + str(e) + name + '.png')
+    plt.close('all')
+
 
 def plt_heatmap(A, name = ''):
     ''' Function plots a heatmap of matrix A and 
@@ -239,10 +241,13 @@ def plt_heatmap(A, name = ''):
     cbar = heatmap.colorbar(im)
     plt.title('Heatmap-A' + name)
     heatmap.savefig('plots/heatmap-A' + name + '.png')
+    plt.close('all')
 
 
 #---------------------------------------------------
 # Plot all the intervals in x_interval_choices from A.real and abs(A)
+
+x_interval_choices = [[0, 3], [0, 5], [0, 10], [0, 20]]
 for el in x_interval_choices:
     #plt_heatmap_interval(A.real, el[0], el[1], '_real')                         # real
     plt_heatmap_interval(absolute_value_matrix(A), el[0], el[1], '_absolute')   # absolute
@@ -293,6 +298,7 @@ def plt_compare_fixed_x(A, B, col, name = '', limits = 0):
         plt.ylim(limits)
     plt.legend(('numerical', 'analytical'))
     fig.savefig('plots/line-compare-A' + str(col) + name + '.png')
+    plt.close('all')
 
 
 #---------------------------------------------------
