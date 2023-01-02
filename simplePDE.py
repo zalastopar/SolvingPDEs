@@ -159,7 +159,7 @@ PLOTS
 
 def plt_fixed_x(A, col, name = '', limits = 0):
     ''' Function plots one column of matrix A and 
-    saves it as ('line-Ax' + name) in folder 'Plots' '''
+    saves it as ('line-Ax' + name) in folder 'plots_simplePDE' '''
     if bigger == True:
         name = name + '_bigger'
 
@@ -175,7 +175,7 @@ def plt_fixed_x(A, col, name = '', limits = 0):
     plt.ylabel('y points')
     if limits != 0:
         plt.ylim(limits)
-    fig.savefig('plots/line-A' + str(col) + name + '.png')
+    fig.savefig('plots_simplePDE/line-A' + str(col) + name + '.png')
     plt.close('all')
 
 # NUMERICAL ----------------------------------------
@@ -202,7 +202,7 @@ for el in x_choices:
 
 def plt_heatmap_interval(A, b, e, name= ''):
     ''' Function plots a heatmap of matrix A from columns b to e and 
-    saves it as ('Heatmap-Ab-e + name) in folder 'Plots' '''
+    saves it as ('Heatmap-Ab-e + name) in folder 'plots_simplePDE' '''
 
     if bigger == True:
         name = name + '_bigger'
@@ -218,13 +218,13 @@ def plt_heatmap_interval(A, b, e, name= ''):
     ax.set(xlabel='A[' + str(b)  + ', ' + str(e) + ']', ylabel='y points')
     cbar = heatmap.colorbar(im)
     plt.title('Heatmap' + ' A[' + str(b)  + ', ' + str(e) + '] ' + name)
-    heatmap.savefig('plots/heatmap-A' + str(b) + '-' + str(e) + name + '.png')
+    heatmap.savefig('plots_simplePDE/heatmap-A' + str(b) + '-' + str(e) + name + '.png')
     plt.close('all')
 
 
 def plt_heatmap(A, name = ''):
     ''' Function plots a heatmap of matrix A and 
-    saves it as ('Heatmap-A + name) in folder 'Plots' '''
+    saves it as ('Heatmap-A + name) in folder 'plots_simplePDE' '''
 
     if bigger == True:
         name = name + '_bigger'
@@ -240,7 +240,7 @@ def plt_heatmap(A, name = ''):
     ax.set(xlabel='A', ylabel='y points')
     cbar = heatmap.colorbar(im)
     plt.title('Heatmap-A' + name)
-    heatmap.savefig('plots/heatmap-A' + name + '.png')
+    heatmap.savefig('plots_simplePDE/heatmap-A' + name + '.png')
     plt.close('all')
 
 
@@ -276,7 +276,7 @@ plt_heatmap(convert_to_decibel(A_ana), '_decibels_ana')      # decibels
 
 def plt_compare_fixed_x(A, B, col, name = '', limits = 0):
     ''' Function plots one column of matrix A (numerical) and the same one from matrix B (analitical) and
-    saves it as ('line-Ax' + name) in folder 'Plots' '''
+    saves it as ('line-Ax' + name) in folder 'plots_simplePDE' '''
 
     if bigger == True:
         name = name + '_bigger'
@@ -297,7 +297,7 @@ def plt_compare_fixed_x(A, B, col, name = '', limits = 0):
     if limits != 0:
         plt.ylim(limits)
     plt.legend(('numerical', 'analytical'))
-    fig.savefig('plots/line-compare-A' + str(col) + name + '.png')
+    fig.savefig('plots_simplePDE/line-compare-A' + str(col) + name + '.png')
     plt.close('all')
 
 

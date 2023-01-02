@@ -272,7 +272,7 @@ def plt_fixed_x(A, col, name = '', limits = 0):
     plt.ylabel('y points')
     if limits != 0:
         plt.ylim(limits)
-    fig.savefig('plots11/line-A' + str(col) + name + '.png')
+    fig.savefig('plots/line-A' + str(col) + name + '.png')
 
 #----------------------------------------------------------------------------------------------------------------------
 # Heatmap 
@@ -296,7 +296,7 @@ def plt_heatmap_interval(A, b, e, name= ''):
     ax.set(xlabel='A[' + str(b)  + ', ' + str(e) + ']', ylabel='y points')
     cbar = heatmap.colorbar(im)
     plt.title('Heatmap' + ' A[' + str(b)  + ', ' + str(e) + '] ' + name)
-    heatmap.savefig('plots11/heatmap-A' + str(b) + '-' + str(e) + name + '.png')
+    heatmap.savefig('plots/heatmap-A' + str(b) + '-' + str(e) + name + '.png')
 
 def plt_heatmap(A, name = ''):
     ''' Function plots a heatmap of matrix A and 
@@ -316,7 +316,7 @@ def plt_heatmap(A, name = ''):
     ax.set(xlabel='A', ylabel='y points')
     cbar = heatmap.colorbar(im)
     plt.title('Heatmap-A' + name)
-    heatmap.savefig('plots11/heatmap-A' + name + '.png')
+    heatmap.savefig('plots/heatmap-A' + name + '.png')
 
 #----------------------------------------------------------------------------------------------------------------------
 # Compare results
@@ -345,7 +345,7 @@ def plt_compare_fixed_x(A, B, col, name = '', limits = 0):
     if limits != 0:
         plt.ylim(limits)
     plt.legend(('numerical', 'analytical'))
-    fig.savefig('plots11/line-compare-A' + str(col) + name + '.png')
+    fig.savefig('plots/line-compare-A' + str(col) + name + '.png')
 
 
 
