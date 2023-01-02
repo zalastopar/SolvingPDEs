@@ -7,7 +7,7 @@ import cmath
 # plot function
 import matplotlib.pyplot as plt
 
-np.set_printoptions(precision=3)
+#np.set_printoptions(precision=3)
 
 bigger = False
 
@@ -39,11 +39,17 @@ x_steps = int(math.floor(Nx + hx)/hx) # number of x steps
 def save_data(x, name):
     ''' Takes n array and saves it as 'name' in file 'data' as .pkl file'''
 
+    if bigger:
+        name = name + 'bigger'
+
     with open('data/' + name + ".pkl","wb") as f:
         pickle.dump(x,f)
 
 def load_data(name):
     ''' Takes data 'name' in file 'data' and returns n array that is saved in the data'''
+
+    if bigger:
+        name = name + 'bigger'
 
     with open('data/' + name + ".pkl","rb") as f:
         x = pickle.load(f)
@@ -58,7 +64,7 @@ def calculate_h_x_y(x, y):
     alpha_rad = alpha*math.pi/180
     h0 = 50
 
-    h = math.tan(alpha_rad) * y
+    h = 50 + math.tan(alpha_rad) * y
 
     return h
 
@@ -77,39 +83,51 @@ def calculate_Kj(omega, c, x, y, j, h):
     returns matrix Kj
     '''
 
-    # create empty matrix Kj
-    K = np.zeros((len(y), len(x)), dtype=np.complex_)
+    # check if it is already calculated
+    try: 
+        K = load_data('K/K' + str(j))
+    except:
+        # create empty matrix Kj
+        K = np.zeros((len(y), len(x)), dtype=np.complex_)
 
-    #########h = calculate_h(x, y)
+        #########h = calculate_h(x, y)
 
-    for i in range(len(y)):
-        for m in range(len(x)):
-            K[i, m] = cmath.sqrt(omega**2/c**2 - (cmath.pi*j/h[m, i])**2)
+        for i in range(len(y)):
+            for m in range(len(x)):
+                K[i, m] = cmath.sqrt(omega**2/c**2 - (math.pi*j/h[m, i])**2)
 
-
+        # save Kj
+        save_data(K, 'K/K' + str(j))
+    
     return np.transpose(K)
 
 
 def calculate_K00j(omega, c, j):
     h = calculate_h_x_y(0, 0)
     if h == 0:
-        h = 0.00000001
+        pass
     return cmath.sqrt(omega**2/c**2 - (cmath.pi*j/h)**2)
 
-def calculate_phi_j(z, x, y, j, h):
+def calculate_phi_j_z(z, x, y, j, h):
     '''
     function h, float z
     x, y, vectors
     h is matrix of h(x, y) for all x, y
     returns matrix phi_j for one z
     '''
+    try:
+        # check if it is already calculated
+        P = load_data('phi/phi' + str(j) + 'z' + str(z))
+    except:
+            # create empty matrix Kj
+            P = np.zeros((len(y), len(x)), dtype=np.complex_)
 
-    # create empty matrix Kj
-    P = np.zeros((len(y), len(x)), dtype=np.complex_)
+            for i in range(len(y)):
+                for m in range(len(x)):
+                    P[i, m] = cmath.sqrt(2/h)* cmath.sin(math.pi*j*z/h[m, i])
 
-    for i in range(len(y)):
-        for m in range(len(x)):
-            P[i, m] = cmath.sqrt(2/h)* cmath.sin(math.pi*j*z/h[m, i])
+            # save phi
+            save_data(P, 'phi/phi' + str(j) + 'z' + str(z))
 
     return P
 
@@ -120,7 +138,6 @@ def calculate_phi_j(z, x, y, j, h):
 # Function to calculate absolute value of a matrix
 #----------------------------------------------------------------------------------------------------------------------
 
-
 def absolute_value_element(x):
     ''' Returns absolute valuse of complex number'''
     return x.real**2 + x.imag**2
@@ -129,8 +146,6 @@ def absolute_value_matrix(X):
     ''' Applies function 'absolute_value_element' to all elements of a matrix X'''
 
     return np.array([list(map(absolute_value_element, x)) for x in X])
-
-
 
 #----------------------------------------------------------------------------------------------------------------------
 # Function to transform unit to decibels
@@ -152,71 +167,79 @@ def convert_to_decibel(X):
 SOLVE PDE
 -------------------------------------------------------------------------------------------------------------------------------------------------------------------'''
 
-def solvePDE_j(a0, Kj, Kj0, dx, dy, x_steps, y_steps):
+def solvePDE_j(a0, Kj, Kj0, dx, dy, x_steps, y_steps, j):
     '''
 
     solves PDE 2iKj0 * Aj_x + Aj_yy + (Kj^2 - Kj0^2)Aj = 0
     returns Aj
     '''
+    # check if it is laready calculated
+    try:
+        A = load_data('A/A' + str(j))
+    except:
 
+        # calculate Kj^2 - Kj0^2
 
-    # calculate Kj^2 - Kj0^2
+        Kj2 = np.square(Kj)
+        K = Kj2 - complex(Kj0**2, 0)
 
-    Kj2 = np.square(Kj)
-    K = Kj2 - Kj0**2
+        # calculate D
+        #Kj0 = 0.2 #######################
+        D = - dx/(4*1j*Kj0*dy**2)
+        
 
-    # calculate D
-    #Kj0 = 0.2 #######################
-    D = - dx/(4*1j*Kj0*dy**2)
-    
+        # Prepare Q and P and f (Qa'=Pa + fa)
 
-    # Prepare Q and P and f (Qa'=Pa + fa)
-
-    f = dx*(-1/2*1j*Kj0)*K
-
-
-
-    Q=np.zeros((y_steps,y_steps), dtype=np.complex_) 
-    P=np.zeros((y_steps,y_steps), dtype=np.complex_)
-
-
-
-    for i in range (0,y_steps):
-        if i == 0 or i == (y_steps - 1):
-            Q[i,i]= 1 + 1*D
-            P[i,i]= 1 - 1*D #+ f[i, i]
-        else:
-            Q[i,i]= 1 + 2*D
-            P[i,i]= 1 - 2*D #+ f[i, i]
-
-    for i in range (0,y_steps-1):    
-        Q[i+1,i]=-D
-        Q[i,i+1]=-D
-        P[i+1,i]=D
-        P[i,i+1]=D
+        f = dx*(-1/2*1j*Kj0)*K
 
 
 
-    # Save initial values a0 to complex matrix A
-
-    A = np.zeros((y_steps, 1), dtype=np.complex_) # calculated a_n
-    for i in range(len(a0)):
-        A[i, 0] = complex(a0[i], 0)
+        Q=np.zeros((y_steps,y_steps), dtype=np.complex_) 
+        P=np.zeros((y_steps,y_steps), dtype=np.complex_)
 
 
 
-    for x in range(1, x_steps+1):
+        for i in range (0,y_steps):
+            if i == 0 or i == (y_steps - 1):
+                Q[i,i]= 1 + 1*D
+                P[i,i]= 1 - 1*D #+ f[i, i]
+            else:
+                Q[i,i]= 1 + 2*D
+                P[i,i]= 1 - 2*D #+ f[i, i]
 
-        d = (P).dot(A[:,x-1])
+        for i in range (0,y_steps-1):    
+            Q[i+1,i]=-D
+            Q[i,i+1]=-D
+            P[i+1,i]=D
+            P[i,i+1]=D
 
-        # update d
-        diag = np.diag(np.matrix(f[x-1, :]))
-        d_update = d + diag
 
-        x = np.linalg.solve(Q, d_update)
-        #x = np.linalg.solve(Q, d) # solve the system
-        s = x.reshape(y_steps, 1) # transpose the result
-        A = np.hstack((A, s)) # add a(i) to A
+
+        # Save initial values a0 to complex matrix A
+
+        A = np.zeros((y_steps, 1), dtype=np.complex_) # calculated a_n
+        for i in range(len(a0)):
+            A[i, 0] = complex(a0[i], 0)
+            A[0, 0] = A[0, 0] + f[0, 0]
+
+
+
+        for x in range(1, x_steps+1):
+            diag = np.diag(np.matrix(f[:, x-1]))
+            P_update = P + diag
+            d = (P_update).dot(A[:,x-1])
+
+            # update d
+            #diag = np.diag(np.matrix(f[x-1, :]))
+            #d_update = d + diag
+
+            x = np.linalg.solve(Q, d)
+            #x = np.linalg.solve(Q, d) # solve the system
+            s = x.reshape(y_steps, 1) # transpose the result
+            A = np.hstack((A, s)) # add a(i) to A
+
+        # save A
+        save_data(A, 'A/A' + str(j))
 
     return A
 
@@ -225,7 +248,6 @@ def solvePDE_j(a0, Kj, Kj0, dx, dy, x_steps, y_steps):
 '''-------------------------------------------------------------------------------------------------------------------------------------------------------------------
 PLOTS 
 -------------------------------------------------------------------------------------------------------------------------------------------------------------------'''
-
 
 #----------------------------------------------------------------------------------------------------------------------
 # Plots of solutions with fixed x (Ax)
@@ -252,13 +274,9 @@ def plt_fixed_x(A, col, name = '', limits = 0):
         plt.ylim(limits)
     fig.savefig('plots11/line-A' + str(col) + name + '.png')
 
-
-
 #----------------------------------------------------------------------------------------------------------------------
 # Heatmap 
 #----------------------------------------------------------------------------------------------------------------------
-
-
 
 def plt_heatmap_interval(A, b, e, name= ''):
     ''' Function plots a heatmap of matrix A from columns b to e and 
@@ -299,8 +317,6 @@ def plt_heatmap(A, name = ''):
     cbar = heatmap.colorbar(im)
     plt.title('Heatmap-A' + name)
     heatmap.savefig('plots11/heatmap-A' + name + '.png')
-
-
 
 #----------------------------------------------------------------------------------------------------------------------
 # Compare results
@@ -367,11 +383,14 @@ def funkcija():
     # calculate H(x,y)
     H = calculate_h(x_points, y_points)
     # where H is 0?????????????????????????????????????????'
-    H[H==0.0] = 0.00000001
+
+
+    # max J
+    M = math.floor(omega*H.min()/(c*math.pi))
 
 
     # J
-    for j in range(4):
+    for j in range(M):
 
         # calculate Kj
         Kj = calculate_Kj(omega, c, x_points, y_points, j, H)
@@ -379,9 +398,10 @@ def funkcija():
 
         # calculate_K00
         Kj0 = calculate_K00j(omega, c, j)
+
         #Kj0 = 0
 
-        A = solvePDE_j(a0, Kj, Kj0, dx, dy, x_steps, y_steps)
+        A = solvePDE_j(a0, Kj, Kj0, dx, dy, x_steps, y_steps, j)
 
 
         # NUMERICAL ----------------------------------------
@@ -393,7 +413,7 @@ def funkcija():
         for el in x_choices:
             #plt_fixed_x(A.real, el, '_real', (-80, 80))                            # A.real
             plt_fixed_x(absolute_value_matrix(A), el, '_absolute_J=' + str(j), (-80, 80))      # abs(A)
-
+            plt.close('all')
 
         #---------------------------------------------------
         # Plot all the intervals in x_interval_choices from A.real and abs(A)
@@ -401,16 +421,16 @@ def funkcija():
         for el in x_interval_choices:
             #plt_heatmap_interval(A.real, el[0], el[1], '_real')                         # real
             plt_heatmap_interval(absolute_value_matrix(A), el[0], el[1], '_absolute_J=' + str(j))   # absolute
-
+            plt.close('all')
 
         # NUMERICAL ---------------------------------------
         #---------------------------------------------------
-        # Plot heatmap of matrix A.real and abs(A) and decibels(A)
+        # Plot heatmap of matrixes abs(A) and decibels(A)
 
         #plt_heatmap(A.real, '_real_num')                                   # real
         plt_heatmap(absolute_value_matrix(A), '_absolute_num_J=' + str(j))      # absolute
         plt_heatmap(convert_to_decibel(A), '_decibels_num_J=' + str(j))         # decibels
-
+        plt.close('all')
 
 
 funkcija()
